@@ -3,7 +3,6 @@ package com.challenge.llc.service.mapper;
 import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -18,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.challenge.llc.domain.entity.EquitySplitRule;
 import com.challenge.llc.domain.entity.SplitRule;
+import com.challenge.llc.service.config.DefaultDistributionMode;
 import com.challenge.llc.service.distributor.Distributor;
 import com.challenge.llc.service.distributor.IEquityScreener;
 import com.challenge.llc.service.distributor.IDistributor;
@@ -28,13 +28,14 @@ import com.challenge.llc.service.distributor.vo.DistributionRulesVo;
 @Component
 public class DistributorBuilder {
 
-    private final RoundingMode distributionRoundMode;
+    private final DefaultDistributionMode defaultDistributionMode;
     private final IEquityScreener equityScreener;
     private final IEquityDistributor equityDistributor;
 
     @Transactional(propagation = Propagation.MANDATORY)
     public List<IDistributor> buildDistributors(List<EquitySplitRule> equitySplitRules) {
         Validate.noNullElements(equitySplitRules);
+
 
         return equitySplitRules
                 .stream()
@@ -45,7 +46,12 @@ public class DistributorBuilder {
 
     private IDistributor buildDistributor(EquitySplitRule equitySplitRule) {
         DistributionRulesVo distributionRules = this.buildDistributionRules(equitySplitRule);
-        return new Distributor(this.distributionRoundMode, distributionRules, this.equityScreener, this.equityDistributor);
+        return new Distributor(
+                this.defaultDistributionMode.getScale(),
+                this.defaultDistributionMode.getRoundingMode(),
+                distributionRules,
+                this.equityScreener,
+                this.equityDistributor);
     }
 
     private DistributionRulesVo buildDistributionRules(EquitySplitRule equitySplitRule) {

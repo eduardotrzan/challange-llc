@@ -76,7 +76,7 @@ public class DistributionMediator {
             throw ErrorCode.DISTRIBUTION_PERSON_GROUP.buildError(payout);
         }
 
-        List<PersonEquitySummaryVo> personEquitySummaries = personMapper.toVos(persons);
+        List<PersonEquitySummaryVo> personEquitySummaries = personMapper.toVos(persons, normalizedCompanyUuid);
 
         BigDecimal remainingChunkPayout = payout;
         List<IDistributor> distributors = this.distributionService.findDistributors(normalizedCompanyUuid);
@@ -91,8 +91,8 @@ public class DistributionMediator {
         BigDecimal leftOverSplit = this.computeLeftoverSplitPayout(payout, personEquitySummaries);
 
         List<EquityPayout> newEquityPayouts = this.buildEquityPayouts(personEquitySummaries, persons);
-        List<EquityPayout> savedEquityPayouts = this.equityPayoutService.save(newEquityPayouts);
-        return this.payoutDistributionBuilder.build(payout, leftOverSplit, savedEquityPayouts)
+        this.equityPayoutService.save(newEquityPayouts);
+        return this.payoutDistributionBuilder.build(payout, leftOverSplit, personEquitySummaries)
                 .orElseThrow(ErrorCode.BUILD_DISTRIBUTION::buildError);
     }
 

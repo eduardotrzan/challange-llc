@@ -15,8 +15,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import java.util.List;
 
 import com.challenge.generic.domain.AbstractEntity;
 
@@ -51,4 +54,7 @@ public class Equity extends AbstractEntity<Long> {
     @ManyToOne(targetEntity = Company.class, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
+
+    @OneToMany(mappedBy = "equity", fetch = FetchType.LAZY)
+    private List<EquityPayout> equityPayouts;
 }
