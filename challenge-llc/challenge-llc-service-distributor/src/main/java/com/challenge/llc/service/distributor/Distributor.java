@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -25,7 +26,9 @@ import com.challenge.llc.service.distributor.vo.PersonEquitySummaryVo;
 @RequiredArgsConstructor
 public class Distributor implements IDistributor {
 
+    private final int scale;
     private final RoundingMode roundingMode;
+
     private final DistributionRulesVo distributionRules;
     private final IEquityScreener equityScreener;
     private final IEquityDistributor equityDistributor;
@@ -70,18 +73,18 @@ public class Distributor implements IDistributor {
 
         BigDecimal remainingDistribution = payout
                 .subtract(distributionAmount)
-                .setScale(2, this.roundingMode);
+                .setScale(this.scale, this.roundingMode);
 
         this.logDistribution(personEquitySummaries, remainingDistribution);
         return remainingDistribution;
     }
 
     private void logDistribution(List<PersonEquitySummaryVo> personEquitySummaries, BigDecimal payout) {
-        List<Pair<Long, BigDecimal>> pairs = Objects
+        List<Pair<UUID, BigDecimal>> pairs = Objects
                 .requireNonNullElse(personEquitySummaries, Collections.<PersonEquitySummaryVo>emptyList())
                 .stream()
                 .filter(Objects::nonNull)
-                .map(p -> Pair.of(p.getPersonId(), p.getPersonPayout()))
+                .map(p -> Pair.of(p.getPersonUuid(), p.getPersonPayout()))
                 .collect(Collectors.toList());
 
         log.debug("Distribution personEquitySummaries={} and payout={}", pairs, payout);

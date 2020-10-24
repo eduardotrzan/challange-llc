@@ -71,7 +71,8 @@ public class PersonMapper {
 
     private PersonEquitySummaryVo toVo(Person person, Equity equity) {
         return PersonEquitySummaryVo.builder()
-                .personId(person.getId())
+                .personName(person.getName())
+                .personUuid(person.getUuid())
                 .personPayout(BigDecimal.ZERO)
                 .equityId(equity.getId())
                 .equityType(equity.getType())

@@ -14,6 +14,7 @@ import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -45,6 +46,7 @@ public class DistributorTest {
     @BeforeEach
     public void setup() {
         this.distributor = new Distributor(
+                2,
                 RoundingMode.DOWN,
                 this.distributionRules,
                 this.equityScreener,
@@ -100,7 +102,7 @@ public class DistributorTest {
         BigDecimal payout = BigDecimal.valueOf(8011.03);
         PersonEquitySummaryVo personEquitySummary = PersonEquitySummaryVo.builder()
                 .personPayout(BigDecimal.ZERO)
-                .personId(1)
+                .personUuid(UUID.randomUUID())
                 .equityType(null)
                 .equityId(2)
                 .equityQuantity(40)
@@ -123,7 +125,7 @@ public class DistributorTest {
         assertThat(capturedPersonEquitySummary).isNotNull();
         assertThat(capturedPersonEquitySummary.getEquityType()).isNull();
         assertThat(capturedPersonEquitySummary.getPersonPayout()).isNotNull().isEqualTo(personEquitySummary.getPersonPayout());
-        assertThat(capturedPersonEquitySummary.getPersonId()).isNotNull().isEqualTo(personEquitySummary.getPersonId());
+        assertThat(capturedPersonEquitySummary.getPersonUuid()).isNotNull().isEqualTo(personEquitySummary.getPersonUuid());
         assertThat(capturedPersonEquitySummary.getEquityId()).isNotNull().isEqualTo(personEquitySummary.getEquityId());
         assertThat(capturedPersonEquitySummary.getEquityQuantity()).isNotNull().isEqualTo(personEquitySummary.getEquityQuantity());
     }

@@ -8,16 +8,18 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(of = { "personId", "personPayout", "equityId", "equityType", "equityQuantity" })
+@ToString(of = { "personUuid", "personPayout", "equityId", "equityType", "equityQuantity" })
 public class PersonEquitySummaryVo {
 
-    private long personId;
+    private String personName;
+    private UUID personUuid;
     private BigDecimal personPayout;
     private long equityId;
     private String equityType;

@@ -23,6 +23,7 @@ import com.challenge.llc.service.distributor.vo.PersonEquitySummaryVo;
 @RequiredArgsConstructor
 public class ProportionEquityDistributor implements IEquityDistributor {
 
+    private final int scale;
     private final RoundingMode roundingMode;
 
     /**
@@ -66,7 +67,7 @@ public class ProportionEquityDistributor implements IEquityDistributor {
         return  payout
                 .multiply(BigDecimal.valueOf(personEquityQuantity))
                 .divide(BigDecimal.valueOf(totalEquityType))
-                .setScale(2, this.roundingMode);
+                .setScale(this.scale, this.roundingMode);
     }
 
     private void validate(DistributionEquitySummaryVo distributionEquitySummary, BigDecimal payout) {

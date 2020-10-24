@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Import;
 
 import com.challenge.llc.domain.config.DomainConfig;
 import com.challenge.llc.service.distributor.EquityScreener;
-import com.challenge.llc.service.distributor.IEquityScreener;
 import com.challenge.llc.service.distributor.IEquityDistributor;
+import com.challenge.llc.service.distributor.IEquityScreener;
 import com.challenge.llc.service.distributor.ProportionEquityDistributor;
 
 @Configuration
@@ -46,8 +46,11 @@ public class ServiceConfig {
      * @return rounding mode for payout distribution
      */
     @Bean
-    public RoundingMode distributionRoundMode() {
-        return RoundingMode.DOWN;
+    public DefaultDistributionMode distributionMode() {
+        return DefaultDistributionMode.builder()
+                .roundingMode(RoundingMode.DOWN)
+                .scale(2)
+                .build();
     }
 
     @Bean
@@ -56,8 +59,11 @@ public class ServiceConfig {
     }
 
     @Bean
-    public IEquityDistributor equityDistributor(RoundingMode distributionRoundMode) {
-        return new ProportionEquityDistributor(distributionRoundMode);
+    public IEquityDistributor equityDistributor(DefaultDistributionMode distributionMode) {
+        return new ProportionEquityDistributor(
+                distributionMode.getScale(),
+                distributionMode.getRoundingMode()
+        );
     }
 
 }

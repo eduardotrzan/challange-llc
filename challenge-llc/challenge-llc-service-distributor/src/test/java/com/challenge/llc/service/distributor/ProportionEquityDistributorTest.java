@@ -22,7 +22,7 @@ public class ProportionEquityDistributorTest {
 
     @BeforeEach
     public void setup() {
-        this.proportionEquityDistributor = new ProportionEquityDistributor(RoundingMode.DOWN);
+        this.proportionEquityDistributor = new ProportionEquityDistributor(2, RoundingMode.DOWN);
     }
 
     @Test

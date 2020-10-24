@@ -9,6 +9,7 @@ import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -24,13 +25,14 @@ import com.challenge.llc.service.testutils.TestDataGenerator;
 public class LlcDistributorIT {
 
     private static final RoundingMode ROUNDING_MODE = RoundingMode.DOWN;
+    private static final int SCALE = 2;
 
     private List<IDistributor> distributors;
 
     @BeforeEach
     public void setup() {
         IEquityScreener equityScreener = new EquityScreener();
-        IEquityDistributor equityDistributor = new ProportionEquityDistributor(ROUNDING_MODE);
+        IEquityDistributor equityDistributor = new ProportionEquityDistributor(SCALE, ROUNDING_MODE);
         this.distributors = List.of(
                 this.firstChunkDistributor(equityScreener, equityDistributor),
                 this.secondChunkDistributor(equityScreener, equityDistributor),
@@ -46,7 +48,7 @@ public class LlcDistributorIT {
                 .chunkAmount(BigDecimal.valueOf(100))
                 .splitRules(splitRules)
                 .build();
-        return new Distributor(ROUNDING_MODE, distributionRules, equityScreener, equityDistributor);
+        return new Distributor(SCALE, ROUNDING_MODE, distributionRules, equityScreener, equityDistributor);
     }
 
     public IDistributor secondChunkDistributor(IEquityScreener equityScreener, IEquityDistributor equityDistributor) {
@@ -58,11 +60,11 @@ public class LlcDistributorIT {
                 .chunkAmount(BigDecimal.valueOf(100))
                 .splitRules(splitRules)
                 .build();
-        return new Distributor(ROUNDING_MODE, distributionRules, equityScreener, equityDistributor);
+        return new Distributor(SCALE, ROUNDING_MODE, distributionRules, equityScreener, equityDistributor);
     }
 
     public IDistributor restChunkDistributor(IEquityScreener equityScreener, IEquityDistributor equityDistributor) {
-        return new Distributor(ROUNDING_MODE, new DistributionRulesVo(), equityScreener, equityDistributor);
+        return new Distributor(SCALE, ROUNDING_MODE, new DistributionRulesVo(), equityScreener, equityDistributor);
     }
 
     @Test
@@ -173,29 +175,29 @@ public class LlcDistributorIT {
             double person1Payout,
             double person2Payout,
             double person3Payout) {
-        var personDistribution = new HashMap<Long, BigDecimal>();
+        var personDistribution = new HashMap<UUID, BigDecimal>();
 
         for (PersonEquitySummaryVo personEquitySummary : personEquitySummaries) {
-            long personId = personEquitySummary.getPersonId();
-            BigDecimal currentPayout = personDistribution
-                    .getOrDefault(personId, BigDecimal.ZERO);
+            UUID personUuid = personEquitySummary.getPersonUuid();
+            BigDecimal currentPayout = personDistribution.getOrDefault(personUuid, BigDecimal.ZERO);
             BigDecimal newPayout = currentPayout
                     .add(personEquitySummary.getPersonPayout())
-                    .setScale(2, ROUNDING_MODE);
-            personDistribution.put(personId, newPayout);
+                    .setScale(SCALE, ROUNDING_MODE);
+            personDistribution.put(personUuid, newPayout);
         }
 
-        List<Pair<Long, BigDecimal>> pairs = personEquitySummaries.stream()
-                .map(p -> Pair.of(p.getPersonId(), p.getPersonPayout()))
+        List<Pair<UUID, BigDecimal>> pairs = personEquitySummaries
+                .stream()
+                .map(p -> Pair.of(p.getPersonUuid(), p.getPersonPayout()))
                 .collect(Collectors.toList());
 
         log.info("final personEquitySummaries={} and expectedDistribution={}", pairs, personDistribution);
-        assertValues(personDistribution, 1, person1Payout);
-        assertValues(personDistribution, 2, person2Payout);
-        assertValues(personDistribution, 3, person3Payout);
+        assertValues(personDistribution, personEquitySummaries.get(0).getPersonUuid(), person1Payout);
+        assertValues(personDistribution, personEquitySummaries.get(1).getPersonUuid(), person2Payout);
+        assertValues(personDistribution, personEquitySummaries.get(2).getPersonUuid(), person3Payout);
     }
 
-    private void assertValues(Map<Long, BigDecimal> personDistribution, long index, double personPayout) {
+    private void assertValues(Map<UUID, BigDecimal> personDistribution, UUID index, double personPayout) {
         BigDecimal computedPerson = personDistribution.get(index);
         assertThat(computedPerson)
                 .withFailMessage(String.format("The computed value=%s for person index=%s is not equals to expectedValue=%s",
