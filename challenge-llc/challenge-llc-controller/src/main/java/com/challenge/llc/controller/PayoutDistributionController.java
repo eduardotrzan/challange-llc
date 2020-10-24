@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import javax.annotation.security.PermitAll;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -39,7 +40,7 @@ public class PayoutDistributionController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    @ResponseStatus
+    @ResponseStatus(HttpStatus.OK)
     public PayoutDistributionDto distribute(@Validated @RequestBody DistributePayoutDto request) {
         return this.distributionMediator.distribute(request.getPayout(), null);
     }

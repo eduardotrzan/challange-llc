@@ -23,12 +23,14 @@ import com.challenge.llc.service.testutils.TestDataGenerator;
 @Slf4j
 public class LlcDistributorIT {
 
+    private static final RoundingMode ROUNDING_MODE = RoundingMode.DOWN;
+
     private List<IDistributor> distributors;
 
     @BeforeEach
     public void setup() {
         IEquityScreener equityScreener = new EquityScreener();
-        IEquityDistributor equityDistributor = new ProportionEquityDistributor(RoundingMode.DOWN);
+        IEquityDistributor equityDistributor = new ProportionEquityDistributor(ROUNDING_MODE);
         this.distributors = List.of(
                 this.firstChunkDistributor(equityScreener, equityDistributor),
                 this.secondChunkDistributor(equityScreener, equityDistributor),
@@ -44,7 +46,7 @@ public class LlcDistributorIT {
                 .chunkAmount(BigDecimal.valueOf(100))
                 .splitRules(splitRules)
                 .build();
-        return new Distributor(RoundingMode.DOWN, distributionRules, equityScreener, equityDistributor);
+        return new Distributor(ROUNDING_MODE, distributionRules, equityScreener, equityDistributor);
     }
 
     public IDistributor secondChunkDistributor(IEquityScreener equityScreener, IEquityDistributor equityDistributor) {
@@ -56,11 +58,11 @@ public class LlcDistributorIT {
                 .chunkAmount(BigDecimal.valueOf(100))
                 .splitRules(splitRules)
                 .build();
-        return new Distributor(RoundingMode.DOWN, distributionRules, equityScreener, equityDistributor);
+        return new Distributor(ROUNDING_MODE, distributionRules, equityScreener, equityDistributor);
     }
 
     public IDistributor restChunkDistributor(IEquityScreener equityScreener, IEquityDistributor equityDistributor) {
-        return new Distributor(RoundingMode.DOWN, new DistributionRulesVo(), equityScreener, equityDistributor);
+        return new Distributor(ROUNDING_MODE, new DistributionRulesVo(), equityScreener, equityDistributor);
     }
 
     @Test
@@ -179,7 +181,7 @@ public class LlcDistributorIT {
                     .getOrDefault(personId, BigDecimal.ZERO);
             BigDecimal newPayout = currentPayout
                     .add(personEquitySummary.getPersonPayout())
-                    .setScale(2, RoundingMode.DOWN);
+                    .setScale(2, ROUNDING_MODE);
             personDistribution.put(personId, newPayout);
         }
 

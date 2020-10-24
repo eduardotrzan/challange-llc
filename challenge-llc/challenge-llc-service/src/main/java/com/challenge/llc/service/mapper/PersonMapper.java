@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -46,23 +47,25 @@ public class PersonMapper {
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public List<PersonEquitySummaryVo> toVos(List<Person> entities) {
+    public List<PersonEquitySummaryVo> toVos(List<Person> entities, UUID companyUuid) {
         return Objects.requireNonNullElse(entities, Collections.<Person>emptyList())
                 .stream()
-                .map(this::toVos)
+                .map(e -> this.toVos(e, companyUuid))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public List<PersonEquitySummaryVo> toVos(Person entity) {
-        if (entity == null || CollectionUtils.isEmpty(entity.getEquities())) {
+    public List<PersonEquitySummaryVo> toVos(Person person, UUID companyUuid) {
+        if (person == null || CollectionUtils.isEmpty(person.getEquities())) {
             return Collections.emptyList();
         }
 
-        return entity.getEquities()
+        return person
+                .getEquities()
                 .stream()
-                .map(e -> this.toVo(entity, e))
+                .filter(e -> e.getCompany().getUuid().equals(companyUuid))
+                .map(e -> this.toVo(person, e))
                 .collect(Collectors.toList());
     }
 

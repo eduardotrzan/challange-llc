@@ -76,7 +76,7 @@ public class DistributionMediator {
             throw ErrorCode.DISTRIBUTION_PERSON_GROUP.buildError(payout);
         }
 
-        List<PersonEquitySummaryVo> personEquitySummaries = personMapper.toVos(persons);
+        List<PersonEquitySummaryVo> personEquitySummaries = personMapper.toVos(persons, normalizedCompanyUuid);
 
         BigDecimal remainingChunkPayout = payout;
         List<IDistributor> distributors = this.distributionService.findDistributors(normalizedCompanyUuid);
