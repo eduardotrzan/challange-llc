@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd"
+        logicalFilePath="llc/liquibase/changelog/LLC-002-Initial-setup.changelog.xml">
+
+    <changeSet author="EGT" id="LLC-002-Initial-setup-company">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT count(*)
+                FROM company c
+                WHERE c.name = 'Krakatoa Ventures'
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="company">
+            <column name="name" value="Krakatoa Ventures"/>
+            <column name="version" value="0"/>
+        </insert>
+
+        <rollback>
+            <delete tableName="company">
+                <where>name = 'Krakatoa Ventures'</where>
+            </delete>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="EGT" id="LLC-002-Initial-setup-equity_split_rule">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT count(*)
+                    FROM equity_split_rule esr
+                WHERE esr.company_id = (
+                    SELECT c.id
+                        FROM company c
+                    WHERE c.name = 'Krakatoa Ventures'
+                )
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="equity_split_rule">
+            <column name="version" value="0"/>
+            <column name="execution_order" value="1"/>
+            <column name="chunk_amount" value="100.0"/>
+            <column name="company_id" valueComputed="(SELECT id FROM company WHERE name = 'Krakatoa Ventures')"/>
+        </insert>
+
+        <insert tableName="equity_split_rule">
+            <column name="version" value="0"/>
+            <column name="execution_order" value="2"/>
+            <column name="company_id" valueComputed="(SELECT id FROM company WHERE name = 'Krakatoa Ventures')"/>
+        </insert>
+
+        <rollback>
+            <delete tableName="equity_split_rule">
+                <where>company_id = (SELECT id FROM company WHERE name = 'Krakatoa Ventures')</where>
+            </delete>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="EGT" id="LLC-002-Initial-setup-split_rule">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT count(*)
+                    FROM split_rule sr
+                WHERE sr.equity_split_rule_id IN (
+                    SELECT esr.id
+                        FROM equity_split_rule esr
+                        JOIN company c ON c.id = esr.company_id AND c.name = 'Krakatoa Ventures'
+                )
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="split_rule">
+            <column name="equity_type" value="CLASS_X"/>
+            <column name="version" value="0"/>
+            <column name="percentage_allocated" value="1"/>
+            <column name="equity_split_rule_id" valueComputed="(SELECT esr.id FROM equity_split_rule esr JOIN company c ON c.id = esr.company_id WHERE c.name = 'Krakatoa Ventures' AND esr.execution_order = 1)"/>
+        </insert>
+
+        <insert tableName="split_rule">
+            <column name="version" value="0"/>
+            <column name="percentage_allocated" value="1"/>
+            <column name="equity_split_rule_id" valueComputed="(SELECT esr.id FROM equity_split_rule esr JOIN company c ON c.id = esr.company_id WHERE c.name = 'Krakatoa Ventures' AND esr.execution_order = 2)"/>
+        </insert>
+
+        <rollback>
+            <delete tableName="split_rule">
+                <where>equity_split_rule_id IN (
+                    SELECT esr.id
+                        FROM equity_split_rule esr
+                    JOIN company c ON c.id = esr.company_id AND c.name = 'Krakatoa Ventures'
+                    )
+                </where>
+            </delete>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="EGT" id="LLC-002-Initial-setup-person">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT count(*)
+                    FROM person p
+                WHERE p.name IN ('Jessica', 'Henry', 'Lisa')
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="person">
+            <column name="name" value="Jessica"/>
+            <column name="version" value="0"/>
+        </insert>
+
+        <insert tableName="person">
+            <column name="name" value="Henry"/>
+            <column name="version" value="0"/>
+        </insert>
+
+        <insert tableName="person">
+            <column name="name" value="Lisa"/>
+            <column name="version" value="0"/>
+        </insert>
+
+        <rollback>
+            <delete tableName="person">
+                <where>name = 'Jessica'</where>
+            </delete>
+
+            <delete tableName="person">
+                <where>name = 'Henry'</where>
+            </delete>
+
+            <delete tableName="person">
+                <where>name = 'Lisa'</where>
+            </delete>
+        </rollback>
+    </changeSet>
+
+    <changeSet author="EGT" id="LLC-002-Initial-setup-equity">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT count(*)
+                    FROM equity e
+                        JOIN person p ON p.id = e.person_id
+                WHERE p.name IN ('Jessica', 'Henry', 'Lisa')
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="equity">
+            <column name="type" value="CLASS_X"/>
+            <column name="version" value="0"/>
+            <column name="quantity" value="40"/>
+            <column name="person_id" valueComputed="(SELECT id FROM person WHERE name = 'Jessica')"/>
+            <column name="company_id" valueComputed="(SELECT id FROM company WHERE name = 'Krakatoa Ventures')"/>
+        </insert>
+
+        <insert tableName="equity">
+            <column name="type" value="CLASS_X"/>
+            <column name="version" value="0"/>
+            <column name="quantity" value="10"/>
+            <column name="person_id" valueComputed="(SELECT id FROM person WHERE name = 'Henry')"/>
+            <column name="company_id" valueComputed="(SELECT id FROM company WHERE name = 'Krakatoa Ventures')"/>
+        </insert>
+
+        <insert tableName="equity">
+            <column name="type" value="CLASS_Y"/>
+            <column name="version" value="0"/>
+            <column name="quantity" value="15"/>
+            <column name="person_id" valueComputed="(SELECT id FROM person WHERE name = 'Henry')"/>
+            <column name="company_id" valueComputed="(SELECT id FROM company WHERE name = 'Krakatoa Ventures')"/>
+        </insert>
+
+        <insert tableName="equity">
+            <column name="type" value="CLASS_Y"/>
+            <column name="version" value="0"/>
+            <column name="quantity" value="15"/>
+            <column name="person_id" valueComputed="(SELECT id FROM person WHERE name = 'Lisa')"/>
+            <column name="company_id" valueComputed="(SELECT id FROM company WHERE name = 'Krakatoa Ventures')"/>
+        </insert>
+
+        <rollback>
+            <delete tableName="equity">
+                <where>company_id = (SELECT id FROM company WHERE name = 'Krakatoa Ventures')</where>
+            </delete>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

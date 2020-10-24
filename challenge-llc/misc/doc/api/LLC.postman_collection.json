@@ -1,0 +1,103 @@
+{
+	"info": {
+		"_postman_id": "1dfe07d3-73bb-4353-a0ba-eba25cc2c093",
+		"name": "LLC",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "valid",
+			"item": [
+				{
+					"name": "LLC - Distribute",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4ad4ede3-ba1f-4dc6-9971-1071632761a4",
+								"exec": [
+									"/*",
+									"var estTime = new Date().toLocaleString(\"en-US\", {timeZone: \"America/Montreal\"});",
+									"var fromDate = new Date(estTime);",
+									"fromDate.setDate(fromDate.getDate() - 10); // days",
+									"postman.setEnvironmentVariable(\"fromDate\", fromDate.toJSON());",
+									"",
+									"var toDate = new Date(estTime);",
+									"toDate.setDate(toDate.getDate() + 10); // days",
+									"postman.setEnvironmentVariable(\"toDate\", toDate.toJSON());",
+									"",
+									"/*",
+									"var moment = require('moment');",
+									"",
+									"const now = moment(); // all dates are in UTC",
+									"",
+									"var aestTime = new Date().toLocaleString(\"en-US\", {timeZone: \"America/Montreal\"});",
+									"console.log('AEST time: '+ (new Date(aestTime)).toISOString())",
+									"",
+									"",
+									"var fromDate = now.subtract(10, 'day');",
+									"postman.setEnvironmentVariable(\"fromDate\", fromDate.toJSON());",
+									"",
+									"var toDate = now.add(10, 'day');",
+									"postman.setEnvironmentVariable(\"toDate\", toDate.toJSON());",
+									"*/"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "43592449-f684-4a73-b2d2-72693527d992",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"payout\": 100\n}"
+						},
+						"url": {
+							"raw": "{{host}}/llc/v1/distribution/payout",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"llc",
+								"v1",
+								"distribution",
+								"payout"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "invalid",
+			"item": [],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

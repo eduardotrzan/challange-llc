@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>challenge-llc</artifactId>
+        <groupId>com.challenge</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>challenge-llc-controller</artifactId>
+
+    <dependencies>
+        <!-- Generic -->
+        <dependency>
+            <groupId>com.challenge</groupId>
+            <artifactId>challenge-generic-controller</artifactId>
+        </dependency>
+
+        <!-- Current System -->
+        <dependency>
+            <groupId>com.challenge</groupId>
+            <artifactId>challenge-llc-dto</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.challenge</groupId>
+            <artifactId>challenge-llc-service</artifactId>
+        </dependency>
+
+        <!-- Spring Boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+    </dependencies>
+</project>

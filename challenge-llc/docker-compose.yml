@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+  llc-db:
+    image: llc-db
+    container_name: llc-dc-db
+    healthcheck:
+      test: "exit 0"
+    ports:
+      - "5440:5432"
+  llc-server:
+    image: llc-server
+    build: .
+    container_name: llc-dc-server
+    depends_on:
+      - llc-db
+    ports:
+      - "127.0.0.1:8885:8484"
+    volumes:
+      - ~/Dev/Docker/logs/llc:/opt/llc/server/logs
+    environment:
+      # Spring running profile
+      - springProfile=docker
+
+      # Application running port
+      - serverPort=8484
+
+      # DB configuration
+      - databaseUrl=jdbc:postgresql://llc-db:5432/llc
+      - databaseUsername=llc
+      - databasePassword=llc
+
+      # JPA sql logging
+      - jpaShowSql=true

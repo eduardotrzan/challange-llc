@@ -1,0 +1,12 @@
+version: '3.1'
+
+services:
+  llc-db:
+    container_name: llc-db-standalone
+    restart: always
+    image: llc-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5542:5432"

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd"
+>
+    <changeSet author="EGT"
+               id="LLC-001-Create-domain"
+               logicalFilePath="llc/liquibase/changelog/LLC-001-Create-domain.changelog.sql">
+        <sqlFile
+                encoding="utf8"
+                path="llc/liquibase/changelog/LLC-001-Create-domain.changelog.sql"
+                splitStatements="true"
+                stripComments="true"
+        />
+    </changeSet>
+
+    <include file="llc/liquibase/changelog/LLC-002-Initial-setup.changelog.xml" />
+    <include file="llc/liquibase/changelog/LLC-003-Update-split-rules.changelog.xml" />
+</databaseChangeLog>

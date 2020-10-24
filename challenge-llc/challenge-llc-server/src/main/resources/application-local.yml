@@ -1,0 +1,10 @@
+server:
+  port: 8885
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5435/llc
+    username: llc
+    password: llc
+  jpa:
+    show-sql: false

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<included>
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%magenta(%d{yyyy-MM-dd HH:mm:ss.SSS Z, America/Montreal}) [%thread] %highlight([%level]) %cyan(%logger{36}) %yellow(reqSessionId=%X{reqSessionId:--}) - %msg%n"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/server.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>logs/server.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <maxFileSize>200MB</maxFileSize>
+            <maxHistory>20</maxHistory>
+            <totalSizeCap>4GB</totalSizeCap>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+        </layout>
+    </appender>
+</included>

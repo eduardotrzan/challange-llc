@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd"
+        logicalFilePath="llc/liquibase/changelog/LLC-002-Initial-setup.changelog.xml">
+
+    <changeSet author="EGT" id="LLC-002-Update-split-rules">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT count(*)
+                    FROM equity_split_rule esr
+                WHERE
+                    esr.execution_order = 2
+                    AND esr.company_id = (
+                        SELECT c.id
+                            FROM company c
+                        WHERE c.name = 'Krakatoa Ventures'
+                    )
+            </sqlCheck>
+        </preConditions>
+
+        <update tableName="equity_split_rule">
+            <column name="execution_order" value="3"/>
+            <where>
+                execution_order = 2
+                AND company_id=(SELECT id FROM company WHERE name = 'Krakatoa Ventures')
+            </where>
+        </update>
+
+        <insert tableName="equity_split_rule">
+            <column name="version" value="0"/>
+            <column name="execution_order" value="2"/>
+            <column name="chunk_amount" value="100.0"/>
+            <column name="company_id" valueComputed="(SELECT id FROM company WHERE name = 'Krakatoa Ventures')"/>
+        </insert>
+
+        <insert tableName="split_rule">
+            <column name="equity_type" value="CLASS_X"/>
+            <column name="version" value="0"/>
+            <column name="percentage_allocated" value="0.50"/>
+            <column name="equity_split_rule_id" valueComputed="(SELECT esr.id FROM equity_split_rule esr JOIN company c ON c.id = esr.company_id WHERE c.name = 'Krakatoa Ventures' AND esr.execution_order = 2)"/>
+        </insert>
+
+        <insert tableName="split_rule">
+            <column name="equity_type" value="CLASS_Y"/>
+            <column name="version" value="0"/>
+            <column name="percentage_allocated" value="0.50"/>
+            <column name="equity_split_rule_id" valueComputed="(SELECT esr.id FROM equity_split_rule esr JOIN company c ON c.id = esr.company_id WHERE c.name = 'Krakatoa Ventures' AND esr.execution_order = 2)"/>
+        </insert>
+
+        <rollback>
+            <delete tableName="split_rule">
+                <where>equity_split_rule_id IN (
+                    SELECT esr.id
+                        FROM equity_split_rule esr
+                        JOIN company c ON c.id = esr.company_id AND c.name = 'Krakatoa Ventures'
+                        WHERE esr.execution_order = 2
+                    )
+                </where>
+            </delete>
+
+            <update tableName="equity_split_rule">
+                <column name="execution_order" value="2"/>
+                <where>
+                    execution_order = 3
+                    AND company_id=(SELECT id FROM company WHERE name = 'Krakatoa Ventures')
+                </where>
+            </update>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>
